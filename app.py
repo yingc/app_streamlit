@@ -100,15 +100,15 @@ def shap_valu(sk_id):
     # Create a tree explainer
     explainer = shap.TreeExplainer(model)
     shap_values = explainer.shap_values(X)
-    #fig = shap.summary_plot(shap_values[1], X.values, feature_names = feats)
     fig= shap.waterfall_plot(shap.Explanation(values=shap_values[1][idx], 
                                        base_values=explainer.expected_value[1], data=test_1,  
                                      feature_names = feats))
-    st.pyplot(fig)
+    #st.pyplot(fig)
+    return fig
 
 @st.cache
 def feature_descriptions(choix_feature):
-    descprition = columns_description.loc[columns_description.Row == choix_feature]["Description"]
+    descprition = columns_description.loc[columns_description.Row == choix_feature]["Description"].values
     return descprition
 
 @st.cache
@@ -124,13 +124,14 @@ def list_fi():
 ######################
 st.sidebar.title("Application ")
 
-sk_id =st.sidebar.selectbox('Please choose SK_ID_CURR', id_client)
+sk_id =st.sidebar.selectbox('Choisir SK_ID_CURR', id_client)
 
+
+#client_info = st.sidebar.radio('Client info', ("Score détail", "Clients similaires"))
 
 client_info = st.sidebar.radio('Client info', ("Oui", "Non"))
+
 client_similaires = st.sidebar.radio('Clients similaires', ("Oui", "Non"))
-
-
 
 
 
@@ -139,29 +140,37 @@ client_similaires = st.sidebar.radio('Clients similaires', ("Oui", "Non"))
 ######################
 st.write("SK_ID_CURR est :", sk_id)
 
-st.write("Le client est avec label :", client_target(sk_id))
+st.write("Le client est avec label :", client_target(sk_id),"Félicitation, votre prêt est accordé!")
 st.write("Seuil : ", threshold)
 st.plotly_chart( pie_client(sk_id), use_container_width=True)
-        
+
+
+
 if client_info == 'Oui':
-    st.image(shap_valu(sk_id))
+    st.subheader("Voici les détails du score: ")
+    st.pyplot(shap_valu(sk_id))
 else:
     st.write("Vous pouvez voir plus de détails.")
     
 
-
 if client_similaires == 'Oui':
+    st.subheader("Voici les clients similaires: ")
     st.write(client_cluster(sk_id))
 else:
     st.write("Vous pouvez afficher les clients simillaires.")
 
 
-
+    
+st.subheader("Voici les descriptions des features: ")
 choix_feature =st.selectbox('Choisire un feature', list_feature)
 st.write( feature_descriptions(choix_feature))
+
+
+
     
 
 
 
 
     
+
