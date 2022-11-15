@@ -11,3 +11,4 @@ lightgbm==3.2.1
 shap>=0.39
 joblib
 ipython
+pip
