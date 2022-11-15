@@ -157,9 +157,9 @@ else:
 
 
 
-container = st.container()
 choix_feature =st.selectbox('Choisire un feature', list_feature)
-container.write( feature_descriptions(choix_feature)
+st.write( feature_descriptions(choix_feature))
+    
 
 
 
