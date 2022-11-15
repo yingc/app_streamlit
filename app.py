@@ -140,8 +140,8 @@ client_similaires = st.sidebar.radio('Clients similaires', ("Oui", "Non"))
 ######################
 st.write("SK_ID_CURR est :", sk_id)
 
-st.write("Le client est avec label :", client_target(sk_id),"Félicitation, votre prêt est accordé!")
-st.write("Seuil : ", threshold)
+st.write("Le client est avec label :", client_target(sk_id))
+st.write("Si label est 0, le prêt est accordé avec une valeur de seuil : ", threshold)
 st.plotly_chart( pie_client(sk_id), use_container_width=True)
 
 
