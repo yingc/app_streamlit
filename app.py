@@ -139,7 +139,7 @@ client_similaires = st.sidebar.radio('Clients similaires', ("Oui", "Non"))
 ######################
 st.write("SK_ID_CURR est :", sk_id)
 
-st.subheader("Le client est avec label :", client_target(sk_id))
+st.write("Le client est avec label :", client_target(sk_id))
 st.write("Seuil : ", threshold)
 st.plotly_chart( pie_client(sk_id), use_container_width=True)
         
