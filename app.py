@@ -19,7 +19,7 @@ from joblib import load
 
 #Load the saved model and data
 model = load("LightGBMC.joblib")
-df= pd.read_csv("app_streamlit_df.csv", sep=',')
+df= pd.read_csv("app_streamlit_dff.csv", sep=',')
 threshold = 0.1685
 id_client = df["SK_ID_CURR"].tolist()
 
