@@ -17,21 +17,6 @@ from joblib import load
 
 
 
-#Load the saved model and data
-model = load("LightGBMC.joblib")
-df= pd.read_csv("app_streamlit_df.csv", sep=',')
-threshold = 0.1685
-id_client = df["SK_ID_CURR"].tolist()
-
-columns_description = pd.read_csv('HomeCredit_columns_description.csv', sep=',', encoding = 'iso8859_1')
-list_feature = columns_description.Row 
-
-feats = [f for f in df.columns if f not in ['TARGET','TARGET_proba', "kmeans_label",'SK_ID_CURR','index','SK_ID_BUREAU','SK_ID_PREV']]
-X = df[feats]
-y = df["TARGET"]
-
-
-
 st.set_page_config( 
     page_title="Loan Prediction App",
     page_icon="logo.png" 
@@ -63,6 +48,25 @@ st.subheader("Voici les résultats de prédiction: ")
 ######################
 #Fonctions
 ######################
+@st.cache
+def load_data():
+    df= pd.read_csv("app_streamlit_df.csv", sep=',')
+    return df
+
+@st.cache
+def load_colums_data():
+    columns_description = pd.read_csv('HomeCredit_columns_description.csv', sep=',', encoding = 'iso8859_1')
+    list_feature = columns_description.Row 
+    return columns_description, list_feature
+
+@st.cache 
+def data_prepare():
+    df = load_data()
+    feats = [f for f in df.columns if f not in ['TARGET','TARGET_proba', "kmeans_label",'SK_ID_CURR','index','SK_ID_BUREAU','SK_ID_PREV']]
+    X = df[feats]
+    y = df["TARGET"]
+    return X, y, feats
+
 @st.cache 
 def idx_client(sk_id):
     return np.where(df.SK_ID_CURR==sk_id)[0][0]
@@ -119,6 +123,20 @@ def list_fi():
     list_features = best_fi.sort_values(by="importance" , ascending=False)[:100]["feature"].unique().tolist()
     return list_features
 
+
+
+
+
+
+#Load the saved model and data
+model = load("LightGBMC.joblib")
+threshold = 0.1685
+df = load_data()
+id_client = df["SK_ID_CURR"].tolist()
+
+columns_description, list_feature=  load_colums_data()
+X, y, feats = data_prepare()
+
 ######################
 #sidebar layout
 ######################
@@ -139,18 +157,19 @@ client_similaires = st.sidebar.radio('Clients similaires', ("Oui", "Non"))
 ######################
 st.write("SK_ID_CURR est :", sk_id)
 
-st.write("Le client est avec label :", client_target(sk_id))
+
+st.subheader("Le client est avec label :", client_target(sk_id))
+st.write("Seuil : ", threshold)
 st.plotly_chart( pie_client(sk_id), use_container_width=True)
 
-
-        
+st.subheader('Shap valu')        
 if client_info == 'Oui':
     st.image(shap_valu(sk_id))
 else:
     st.write("Vous pouvez voir plus de détails.")
     
-
-
+    
+st.subheader('Clients simillaires')
 if client_similaires == 'Oui':
     st.write(client_cluster(sk_id))
 else:
@@ -159,6 +178,6 @@ else:
 
 
 
+
 choix_feature =st.selectbox('Choisire un feature', list_feature)
 st.write( feature_descriptions(choix_feature))
-    
